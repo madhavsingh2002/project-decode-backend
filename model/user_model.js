@@ -1,10 +1,12 @@
 // Create the Model for user having fullname, email, password, and profileImg.
 // Note:profileImg should have default image.
-const mongoose = require('mongoose')
-const userSchema =  new mongoose.Schema({
+
+// Let's see how we can create the model for it..
+const mongoose =  require('mongoose')// mongoose need to import and install.
+const userSchema = new mongoose.Schema({
     fullname:{
-        type:String,
-        required:true
+      type:String,
+      required:true
     },
     email:{
         type:String,
@@ -12,11 +14,14 @@ const userSchema =  new mongoose.Schema({
     },
     password:{
         type:String,
-        required:true
+        required:true,
     },
     profileImg:{
         type:String,
-        default:'url'
-    }  
+        default:"url"// For By Default we can inside the picture..
+    }
 })
-mongoose.model('UserModel',userSchema)
+// let's import this....
+mongoose.model('UserModel',userSchema)// UserModel will the name of the Model...
+// This is the simple example to create the model for user...
+// thank's for watching.......

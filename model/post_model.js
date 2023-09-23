@@ -1,3 +1,5 @@
+// Create the Model for Post related to user_model, having the field such as
+// description,location,likes,comments,images,author.
 const mongoose = require('mongoose')
 const {ObjectId} = mongoose.Schema.Types;
 const postSchema = new mongoose.Schema({

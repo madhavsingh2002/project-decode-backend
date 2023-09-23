@@ -1,3 +1,7 @@
+// Create the api for SIGNUP of user
+// having the fields such as fullname, email, password, profileImg.
+
+
 router.post('/signup', async (req,res)=>{
     const {fullname,email,password,profileImg} =req.body;
     try{
@@ -18,6 +22,12 @@ router.post('/signup', async (req,res)=>{
     }
    
 })
+
+
+// Create the api for LOGIN of user
+// having the fields such as  email, password.
+
+
 router.post('/login',async(req,res)=>{
     const {email,password} =req.body;
     try{
