@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
       required:true
     },
     email:{
-        type:String,
+        type:String, // This is the user-model for refer..
         required:true
     },
     password:{
