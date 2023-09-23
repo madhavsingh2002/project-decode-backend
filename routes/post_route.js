@@ -11,6 +11,17 @@ app.get('/allposts',async(req,res)=>{
     catch(err){
         res.status(505).json({error:err.message})
     }
-})// This is the simple api for getting all the posts by users...
-// REFER the usermodel and postmodel... here
-// Thanks for watching......
+})
+// Create an API endpoint for "myAllPosts" that retrieves posts belonging to the current user.
+// For example, when a user accesses their profile, they can view all their own posts.
+
+app.get("/myallposts", protectedRoute, async (req, res) => {
+    try {
+        const dbPosts = await PostModel.find({ author: req.user._id })
+            .populate("author", "_id fullName profileImg");
+        res.status(200).json({ posts: dbPosts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "An error occurred while fetching user's posts." });
+    }
+});
