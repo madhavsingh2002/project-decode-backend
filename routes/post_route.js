@@ -49,25 +49,44 @@ app.post('/createpost',protectedRoute,async(req,res)=>{
 
 // Define API endpoints for deleting posts.
 
-app.delete("/deletepost/:postId", protectedRoute, async (req, res) => {
+
+app.delete('/deletepost/:postId',protectedRoute,async(req,res)=>{
+    try{
+        const postFound = await PostModel.findOne({_id:req.params.postId}).populate("author","_id")
+        if(!postFound){
+          return  res.status(400).json({error:'Post does not Effect'})
+        }
+        // Check if the post author is the same as the logged-in user:only then allow.
+        if(postFound.author._id.toString()===req.user._id.toString()){//matching that owner of post and person who is deleting is same or not...
+            await postFound.remove()
+            req.status(200).json({result:'post deleted successfully'})
+        }
+        else{
+            res.status(400).json({error:'You are not authorized to delete this post'})
+        }
+    }
+    catch(err){
+        res.status(505).json({error:err.message})
+    }
+})
+
+// Define API endpoints for Liking posts.
+
+app.put("/like", protectedRoute, async (req, res) => {
     try {
-        const postFound = await PostModel.findOne({ _id: req.params.postId }).populate("author", "_id");
-        
-        if (!postFound) {
-            return res.status(400).json({ error: "Post does not exist" });
+        const updatedPost = await PostModel.findByIdAndUpdate(
+            req.body.postId,
+            { $push: { likes: req.user._id } },
+            { new: true }
+        ).populate("author", "_id fullName");
+
+        if (!updatedPost) {
+            return res.status(404).json({ error: "Post not found" });
         }
 
-        // Check if the post author is the same as the logged-in user; only then allow deletion
-        if (postFound.author._id.toString() === req.user._id.toString()) {
-            await postFound.remove();
-            res.status(200).json({ result: "Post deleted successfully" });
-        } else {
-            res.status(403).json({ error: "You are not authorized to delete this post" });
-        }
+        res.json(updatedPost);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "An error occurred while deleting the post." });
+        res.status(500).json({ error: "An error occurred while updating the post with a like." });
     }
 });
-
-
