@@ -111,25 +111,24 @@ app.put('/unlike',protectedRoute,async(req,res)=>{
 
 // Define API endpoints for Commenting posts.
 
-app.put("/comment", protectedRoute, async (req, res) => {
-    try {
-        const comment = { commentText: req.body.commentText, commentedBy: req.user._id };
-        
+app.put('/comment',protectedRoute,async(req,res)=>{
+    try{
+        const comment = {commentText:req.body.commentText,commentedBy:req.user._id}// here we get the comment by the author detail..
+       // comment <- store in this.
+       // now we find the post and push this comment
         const updatedPost = await PostModel.findByIdAndUpdate(
             req.body.postId,
-            { $push: { comments: comment } },
-            { new: true }
+            {$push: {Comments:comment} },// comment Comments <- is inside our model and comment <- user input.
+            {new: true}
         )
-        .populate("comments.commentedBy", "_id fullName")
-        .populate("author", "_id fullName");
-
-        if (!updatedPost) {
-            return res.status(404).json({ error: "Post not found" });
+        .populate('Comments.commentedBy','_id fullname')
+        .populate('author','_id','fullname');
+        if(!updatedPost){
+            return res.status(404).json({error:'post not found'})
         }
-
-        res.json(updatedPost);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "An error occurred while adding a comment to the post." });
+        res.json(updatedPost)
     }
-});
+    catch(err){
+        res.status(500).json({error:err.message})
+    }
+})
