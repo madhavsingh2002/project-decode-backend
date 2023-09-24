@@ -72,7 +72,7 @@ app.delete('/deletepost/:postId',protectedRoute,async(req,res)=>{
 
 // Define API endpoints for Liking posts.
 
-// Let's create the endpoint for the like...
+
 app.put('/like',protectedRoute,async(req,res)=>{
     try{
         const updatedPost= await PostModel.findByIdAndUpdate(
@@ -88,13 +88,40 @@ app.put('/like',protectedRoute,async(req,res)=>{
         res.status(505).json({error:err.message})
     }
 })
-router.put("/unlike", protectedRoute, async (req, res) => {
-    try {
+
+
+// Define API endpoints for unliking posts.
+
+
+app.put('/unlike',protectedRoute,async(req,res)=>{
+    try{
         const updatedPost = await PostModel.findByIdAndUpdate(
             req.body.postId,
-            { $pull: { unlikes: req.user._id } },
+            {$pull:{unlikes:req.user._id}},
+            {new:true}
+        ).populate('author','_id fullname');
+        if(!updatedPost){
+            return res.status(404).json({error:'Post not found'})
+        }
+    }
+    catch(err){
+        res.status(500).json({error:'an Error Occur'})
+    }
+})
+
+// Define API endpoints for Commenting posts.
+
+app.put("/comment", protectedRoute, async (req, res) => {
+    try {
+        const comment = { commentText: req.body.commentText, commentedBy: req.user._id };
+        
+        const updatedPost = await PostModel.findByIdAndUpdate(
+            req.body.postId,
+            { $push: { comments: comment } },
             { new: true }
-        ).populate("author", "_id fullName");
+        )
+        .populate("comments.commentedBy", "_id fullName")
+        .populate("author", "_id fullName");
 
         if (!updatedPost) {
             return res.status(404).json({ error: "Post not found" });
@@ -103,6 +130,6 @@ router.put("/unlike", protectedRoute, async (req, res) => {
         res.json(updatedPost);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "An error occurred while updating the post with an unlike." });
+        res.status(500).json({ error: "An error occurred while adding a comment to the post." });
     }
 });
