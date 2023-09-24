@@ -72,11 +72,27 @@ app.delete('/deletepost/:postId',protectedRoute,async(req,res)=>{
 
 // Define API endpoints for Liking posts.
 
-app.put("/like", protectedRoute, async (req, res) => {
+// Let's create the endpoint for the like...
+app.put('/like',protectedRoute,async(req,res)=>{
+    try{
+        const updatedPost= await PostModel.findByIdAndUpdate(
+            req.body.postId,
+            {$push:{likes:req.user._id }},
+            {new:true}
+        ).populate('author','_id fullname')
+        if(!updatedPost){
+            return res.status(404).json({error:'post not found'})
+        }
+    }
+    catch(err){
+        res.status(505).json({error:err.message})
+    }
+})
+router.put("/unlike", protectedRoute, async (req, res) => {
     try {
         const updatedPost = await PostModel.findByIdAndUpdate(
             req.body.postId,
-            { $push: { likes: req.user._id } },
+            { $pull: { unlikes: req.user._id } },
             { new: true }
         ).populate("author", "_id fullName");
 
@@ -87,6 +103,6 @@ app.put("/like", protectedRoute, async (req, res) => {
         res.json(updatedPost);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "An error occurred while updating the post with a like." });
+        res.status(500).json({ error: "An error occurred while updating the post with an unlike." });
     }
 });

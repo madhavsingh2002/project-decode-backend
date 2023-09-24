@@ -18,7 +18,15 @@ const PostSchema = new mongoose.Schema({
                 type: ObjectId,
                 ref: 'UserModel',// refer the userModel to see which user like the post....
             }
-        ],// [] used to add multiple likes from other uses..
+        ],
+        // [] used to add multiple likes from other uses..
+        unlikes:
+        [
+            {
+                type: ObjectId,
+                ref: 'UserModel',// refer the userModel to see which user like the post....
+            }
+        ],
     Comments:[
         {
             commentText:String,
